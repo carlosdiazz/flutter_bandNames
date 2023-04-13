@@ -8,14 +8,14 @@ import 'package:flutter_bandnames/services/socket_service.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeBanScreen extends StatefulWidget {
+  const HomeBanScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeBanScreen> createState() => _HomeBanScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeBanScreenState extends State<HomeBanScreen> {
   List<BandModel> bands = [];
 
   @override
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Icons.check_circle,
                     color: Colors.blue[300],
                   )
-                : Icon(
+                : const Icon(
                     Icons.offline_bolt,
                     color: Colors.red,
                   ),
@@ -182,6 +182,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _showGraph() {
     Map<String, double> dataMap = {};
 
+    if (bands.isEmpty) {
+      return const CircularProgressIndicator();
+    }
+
     bands.forEach(
       (element) {
         dataMap[element.name] = element.votes.toDouble();
@@ -189,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     return Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         width: double.infinity,
         height: 300,
         child: PieChart(

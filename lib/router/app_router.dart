@@ -2,11 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/screen/screen.dart';
 
 class AppRoute {
-  static const homeScreen = "home_screen";
+  static const homeBanScreen = "homeBanScreen";
   static const statusScreen = "statusScreen";
 
+  static const chatScreen = "chatScreen";
+  static const loadingScreen = "loadingScreen";
+  static const loginScreen = "loginScreen";
+  static const registerScreen = "registerScreen";
+  static const usuariosScreen = "usuariosScreen";
+
   static Map<String, Widget Function(BuildContext)> routes = {
-    homeScreen: (context) => const HomeScreen(),
-    statusScreen: (p0) => const StatusScreen()
+    //VIEJOS
+    homeBanScreen: (context) => const HomeBanScreen(),
+    statusScreen: (context) => const StatusScreen(),
+
+    //NUEVOS
+    chatScreen: (context) => const ChatScreen(),
+    loadingScreen: (context) => const LoadingScreen(),
+    loginScreen: (context) => const LoginScreen(),
+    registerScreen: (context) => const RegisterScreen(),
+    usuariosScreen: (context) => const UsuariosScreen(),
   };
 }
