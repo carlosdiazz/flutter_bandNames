@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -14,18 +15,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<BandModel> bands = [
-    BandModel(id: "1", name: "demo1", votes: 1),
-    BandModel(id: "2", name: "demo2", votes: 2),
-    BandModel(id: "3", name: "demo3", votes: 3),
-    BandModel(id: "4", name: "demo4", votes: 4),
-    BandModel(id: "5", name: "demo5", votes: 5)
-  ];
+  List<BandModel> bands = [];
+
+  @override
+  void dispose() {
+    final socketService = Provider.of<SocketService>(context);
+    socketService.socket.off("active-bands");
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     //provider
     final socketService = Provider.of<SocketService>(context);
+    socketService.socket.on('active_bands', (data) {
+      final List dataDecode = jsonDecode(data);
+      bands = dataDecode.map((band) => BandModel.fromMap(band)).toList();
+      setState(() {});
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -156,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void addBandToList(String name) {
     if (name.length > 1) {
-      bands.add(BandModel(id: DateTime.now().toString(), name: name, votes: 0));
+      //bands.add(BandModel(id: DateTime.now().toString(), name: name, votes: 0));
       setState(() {});
     }
     Navigator.pop(context);

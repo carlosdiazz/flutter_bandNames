@@ -19,7 +19,7 @@ class SocketService with ChangeNotifier {
 
     // Dart client
     _socket = IO.io(
-        'http://localhost:4000',
+        'http://192.168.0.10:4000',
         IO.OptionBuilder()
             .setTransports(['websocket']) //1 for Flutter or Dart VM
             .disableAutoConnect() // disable auto-connection
@@ -27,22 +27,23 @@ class SocketService with ChangeNotifier {
             .build());
     _socket.connect();
 
-    _socket.onConnect((_) {
-      print('Se conecto');
-      _socket.emit('message', 'test');
-    });
-    _socket.onDisconnect((_) => print('Se Desconecto'));
+    //_socket.onConnect((_) {
+    //  print('Se conecto');
+    //  _socket.emit('message', 'test');
+    //});
+    //_socket.onDisconnect((_) => print('Se Desconecto'));
 
     _socket.on('disconnect', (data) {
-      print('Disconect');
+      print('Se Desconecto');
       _serverStatus = ServerStatus.offline;
       notifyListeners();
     });
 
     _socket.on('connect', (data) {
-      print("Conne");
+      print("SE CONECTO");
       _serverStatus = ServerStatus.online;
       notifyListeners();
+      _socket.emit("nuevo_mensaje");
     });
 
     _socket.on('nuevo_mensaje', (data) {
