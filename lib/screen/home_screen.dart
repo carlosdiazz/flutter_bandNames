@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/models/band_models.dart';
 import 'package:flutter_bandnames/services/socket_service.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -56,9 +57,16 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: ListView.builder(
-          itemCount: bands.length,
-          itemBuilder: (context, index) => _bandTile(bands[index])),
+      body: Column(
+        children: [
+          _showGraph(),
+          Expanded(
+            child: ListView.builder(
+                itemCount: bands.length,
+                itemBuilder: (context, index) => _bandTile(bands[index])),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: addNewBand,
         child: const Icon(Icons.add),
@@ -67,12 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Dismissible _bandTile(BandModel bandModel) {
+    final socketService = Provider.of<SocketService>(context, listen: false);
+
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.startToEnd,
       onDismissed: (direction) {
-        //TODO llamar el borrado del server
-        print("ID: ${bandModel.id}");
+        socketService.socket.emit("remove_band", {"id": bandModel.id});
       },
       background: Container(
         color: Colors.red,
@@ -95,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           style: const TextStyle(fontSize: 15),
         ),
         onTap: () {
-          print(bandModel.name);
+          socketService.socket.emit("vote_band", {"id": bandModel.id});
         },
       ),
     );
@@ -162,10 +171,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void addBandToList(String name) {
+    final socketService = Provider.of<SocketService>(context, listen: false);
     if (name.length > 1) {
-      //bands.add(BandModel(id: DateTime.now().toString(), name: name, votes: 0));
-      setState(() {});
+      socketService.socket.emit("add_band", {"name": name});
+      //emitir add_band
     }
     Navigator.pop(context);
+  }
+
+  Widget _showGraph() {
+    Map<String, double> dataMap = {};
+
+    bands.forEach(
+      (element) {
+        dataMap[element.name] = element.votes.toDouble();
+      },
+    );
+
+    return Container(
+        padding: EdgeInsets.all(20),
+        width: double.infinity,
+        height: 300,
+        child: PieChart(
+          dataMap: dataMap,
+          chartValuesOptions: ChartValuesOptions(decimalPlaces: 0),
+        ));
   }
 }

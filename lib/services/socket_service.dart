@@ -19,7 +19,7 @@ class SocketService with ChangeNotifier {
 
     // Dart client
     _socket = IO.io(
-        'http://192.168.0.10:4000',
+        'http://localhost:4000',
         IO.OptionBuilder()
             .setTransports(['websocket']) //1 for Flutter or Dart VM
             .disableAutoConnect() // disable auto-connection
