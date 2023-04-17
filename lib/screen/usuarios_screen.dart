@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_bandnames/models/usuario.dart';
 
 class UsuariosScreen extends StatefulWidget {
@@ -9,7 +10,9 @@ class UsuariosScreen extends StatefulWidget {
 }
 
 class _UsuariosScreenState extends State<UsuariosScreen> {
-  final usuario = [
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+  final usuarios = [
     UsuarioModel(
         email: "carlos@mail.com", nombre: "Carlos", online: true, uid: "1"),
     UsuarioModel(
@@ -44,24 +47,62 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
             )
           ],
         ),
-        body: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) => ListTile(
-                  title: Text(usuario[index].nombre),
-                  leading: CircleAvatar(
-                    child: Text(usuario[index].nombre.substring(0, 2)),
-                  ),
-                  trailing: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                        color: usuario[index].online
-                            ? Colors.green[300]
-                            : Colors.red,
-                        borderRadius: BorderRadius.circular(100)),
-                  ),
-                ),
-            separatorBuilder: (context, index) => Divider(),
-            itemCount: usuario.length));
+        body: SmartRefresher(
+          controller: refreshController,
+          enablePullDown: true,
+          onRefresh: _cargarUsuarios,
+          header: WaterDropHeader(
+            complete: Icon(
+              Icons.check,
+              color: Colors.blue[400],
+            ),
+            waterDropColor: Colors.blue,
+          ),
+          child: _listViewUsuarios(),
+        ));
+  }
+
+  ListView _listViewUsuarios() {
+    return ListView.separated(
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, index) =>
+            _usuarioListTile(usuario: usuarios[index]),
+        separatorBuilder: (context, index) => Divider(),
+        itemCount: usuarios.length);
+  }
+
+  void _cargarUsuarios() async {
+    // monitor network fetch
+    await Future.delayed(const Duration(milliseconds: 2000));
+
+    refreshController.refreshCompleted();
+  }
+}
+
+class _usuarioListTile extends StatelessWidget {
+  const _usuarioListTile({
+    //super.key,
+    required this.usuario,
+  });
+
+  final UsuarioModel usuario;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(usuario.nombre),
+      subtitle: Text(usuario.email),
+      leading: CircleAvatar(
+        child: Text(usuario.nombre.substring(0, 2)),
+        backgroundColor: Colors.blue[100],
+      ),
+      trailing: Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+            color: usuario.online ? Colors.green[300] : Colors.red,
+            borderRadius: BorderRadius.circular(100)),
+      ),
+    );
   }
 }
