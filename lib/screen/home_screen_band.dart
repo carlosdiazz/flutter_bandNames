@@ -20,7 +20,7 @@ class _HomeBanScreenState extends State<HomeBanScreen> {
 
   @override
   void dispose() {
-    final socketService = Provider.of<SocketService>(context);
+    final socketService = Provider.of<SocketService>(context, listen: false);
     socketService.socket.off("active-bands");
     super.dispose();
   }

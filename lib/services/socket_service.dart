@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/config/variables.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 enum ServerStatus { online, offline, connecting }
@@ -19,8 +20,7 @@ class SocketService with ChangeNotifier {
 
     // Dart client
     _socket = IO.io(
-        //'http://localhost:4000',
-        "https://nestpruebasocket-production.up.railway.app/",
+        Variables.socketUrl,
         IO.OptionBuilder()
             .setTransports(['websocket']) //1 for Flutter or Dart VM
             .disableAutoConnect() // disable auto-connection

@@ -67,7 +67,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) =>
             _usuarioListTile(usuario: usuarios[index]),
-        separatorBuilder: (context, index) => Divider(),
+        separatorBuilder: (context, index) => const Divider(),
         itemCount: usuarios.length);
   }
 
@@ -93,8 +93,8 @@ class _usuarioListTile extends StatelessWidget {
       title: Text(usuario.nombre),
       subtitle: Text(usuario.email),
       leading: CircleAvatar(
-        child: Text(usuario.nombre.substring(0, 2)),
         backgroundColor: Colors.blue[100],
+        child: Text(usuario.nombre.substring(0, 2)),
       ),
       trailing: Container(
         width: 10,

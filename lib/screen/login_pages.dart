@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/router/app_router.dart';
+import 'package:flutter_bandnames/services/auth_service.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -69,6 +71,10 @@ class _FormState extends State<_Form> {
         BtnAzul(
           onPressed: () {
             print(passwordCtrl.text);
+            print(emailCtrl.text);
+            final authService =
+                Provider.of<AuthService>(context, listen: false);
+            authService.login(emailCtrl.text, passwordCtrl.text);
           },
           text: "Ingresar",
         )
