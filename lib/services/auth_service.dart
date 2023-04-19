@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/config/variables.dart';
 import 'package:flutter_bandnames/models/login_response.dart';
-//import 'package:flutter_bandnames/models/usuario.dart';
+import 'package:flutter_bandnames/models/usuario.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService with ChangeNotifier {
-  //UsuarioModel usuario;
+  UsuarioModel? usuario;
   bool _autenticando = false;
 
   bool get autenticando => _autenticando;
@@ -43,13 +43,72 @@ class AuthService with ChangeNotifier {
       autenticando = false;
       if (resp.statusCode == 200) {
         final loginResponse = loginResponseFromJson(resp.body);
+        usuario = loginResponse.user;
         await _guardarToken(loginResponse.token);
         return true;
       } else {
         return false;
       }
     } catch (error) {
+      print(
+        "Error=> $error",
+      );
       autenticando = false;
+      return false;
+    }
+  }
+
+  Future<bool> register(String name, String email, String password) async {
+    try {
+      autenticando = true;
+      final data = {"email": email, "password": password, "name": name};
+      final uri = Uri.parse("${Variables.apiUrl}/auth/register");
+      final resp = await http.post(uri,
+          body: jsonEncode(data),
+          headers: {"Content-Type": "application/json"});
+
+      autenticando = false;
+      if (resp.statusCode == 201) {
+        final registerResponse = loginResponseFromJson(resp.body);
+        usuario = registerResponse.user;
+        await _guardarToken(registerResponse.token);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      print(
+        "Error=> $error",
+      );
+      autenticando = false;
+      return false;
+    }
+  }
+
+  Future<bool> isLoggedIn() async {
+    try {
+      final token = await _storage.read(key: "token");
+      if (token == null) {
+        return false;
+      }
+      final uri = Uri.parse("${Variables.apiUrl}/auth/renew");
+      final resp = await http.get(uri, headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      }).timeout(const Duration(milliseconds: 5000));
+
+      if (resp.statusCode == 200) {
+        final registerResponse = loginResponseFromJson(resp.body);
+        usuario = registerResponse.user;
+        await _guardarToken(registerResponse.token);
+        return true;
+      } else {
+        logout();
+        return false;
+      }
+    } catch (error) {
+      print("Error => $error");
+      logout();
       return false;
     }
   }

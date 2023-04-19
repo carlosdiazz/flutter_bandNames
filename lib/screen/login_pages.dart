@@ -86,7 +86,7 @@ class _FormState extends State<_Form> {
                     mostrarAlerta(
                         context: context,
                         titulo: "Login Incorrecto",
-                        subtitulo: "subtitulo");
+                        subtitulo: "Revise sus credenciales");
                   }
                 },
           text: "Ingresar",

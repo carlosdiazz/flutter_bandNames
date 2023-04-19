@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/router/app_router.dart';
+import 'package:flutter_bandnames/services/auth_service.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_bandnames/models/usuario.dart';
 
@@ -23,16 +26,25 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
+    print(usuario);
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "My name",
+          centerTitle: true,
+          title: Text(
+            usuario?.name.toUpperCase() ?? "",
             style: TextStyle(color: Colors.black87),
           ),
           elevation: 1,
           backgroundColor: Colors.white,
           leading: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                //TODO Desconecatrno del Socket
+                Navigator.pushReplacementNamed(context, AppRoute.loginScreen);
+                AuthService.deleteToken();
+              },
               icon: const Icon(
                 Icons.exit_to_app_outlined,
                 color: Colors.black87,

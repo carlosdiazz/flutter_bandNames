@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/helpers/mostrar_alerta.dart';
 import 'package:flutter_bandnames/router/app_router.dart';
+import 'package:flutter_bandnames/services/auth_service.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -53,6 +56,8 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -77,9 +82,25 @@ class _FormState extends State<_Form> {
             textController: passwordCtrl),
         //TextField(),
         BtnAzul(
-          onPressed: () {
-            print(passwordCtrl.text);
-          },
+          onPressed: authService.autenticando
+              ? null
+              : () async {
+                  FocusScope.of(context).unfocus();
+                  final registerOk = await authService.register(
+                      nombreCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passwordCtrl.text.trim());
+                  print(registerOk);
+                  if (registerOk) {
+                    Navigator.pushReplacementNamed(
+                        context, AppRoute.usuariosScreen);
+                  } else {
+                    mostrarAlerta(
+                        context: context,
+                        titulo: "Regsitro Fallido",
+                        subtitulo: "Revise sus credenciales");
+                  }
+                },
           text: "Registrar",
         )
       ]),
