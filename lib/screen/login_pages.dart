@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/helpers/mostrar_alerta.dart';
 import 'package:flutter_bandnames/router/app_router.dart';
 import 'package:flutter_bandnames/services/auth_service.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
@@ -51,6 +52,8 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -69,13 +72,23 @@ class _FormState extends State<_Form> {
             textController: passwordCtrl),
         //TextField(),
         BtnAzul(
-          onPressed: () {
-            print(passwordCtrl.text);
-            print(emailCtrl.text);
-            final authService =
-                Provider.of<AuthService>(context, listen: false);
-            authService.login(emailCtrl.text, passwordCtrl.text);
-          },
+          onPressed: authService.autenticando
+              ? null
+              : () async {
+                  FocusScope.of(context).unfocus();
+                  final loginOk = await authService.login(
+                      emailCtrl.text.trim(), passwordCtrl.text.trim());
+                  if (loginOk) {
+                    //TODO Navegar a otra pantalla
+                    Navigator.pushReplacementNamed(
+                        context, AppRoute.usuariosScreen);
+                  } else {
+                    mostrarAlerta(
+                        context: context,
+                        titulo: "Login Incorrecto",
+                        subtitulo: "subtitulo");
+                  }
+                },
           text: "Ingresar",
         )
       ]),

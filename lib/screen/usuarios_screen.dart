@@ -13,12 +13,12 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   final usuarios = [
-    UsuarioModel(
-        email: "carlos@mail.com", nombre: "Carlos", online: true, uid: "1"),
-    UsuarioModel(
-        email: "jose@mail.com", nombre: "Jose", online: true, uid: "2"),
-    UsuarioModel(
-        email: "maria@mail.com", nombre: "Maria", online: false, uid: "3")
+    //UsuarioModel(
+    //    email: "carlos@mail.com", nombre: "Carlos", online: true, uid: "1"),
+    //UsuarioModel(
+    //    email: "jose@mail.com", nombre: "Jose", online: true, uid: "2"),
+    //UsuarioModel(
+    //    email: "maria@mail.com", nombre: "Maria", online: false, uid: "3")
   ];
 
   @override
@@ -90,11 +90,11 @@ class _usuarioListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(usuario.nombre),
+      title: Text(usuario.name),
       subtitle: Text(usuario.email),
       leading: CircleAvatar(
         backgroundColor: Colors.blue[100],
-        child: Text(usuario.nombre.substring(0, 2)),
+        child: Text(usuario.name.substring(0, 2)),
       ),
       trailing: Container(
         width: 10,
