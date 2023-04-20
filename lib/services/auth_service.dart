@@ -1,11 +1,13 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bandnames/config/variables.dart';
-import 'package:flutter_bandnames/models/login_response.dart';
-import 'package:flutter_bandnames/models/usuario.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+//PROPIO
+
+import 'package:flutter_bandnames/config/variables.dart';
+import 'package:flutter_bandnames/models/login_response.dart';
+import 'package:flutter_bandnames/models/usuarios_response.dart';
 
 class AuthService with ChangeNotifier {
   UsuarioModel? usuario;

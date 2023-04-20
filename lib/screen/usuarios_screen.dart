@@ -5,7 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 //PROPIO
 import 'package:flutter_bandnames/router/app_router.dart';
 import 'package:flutter_bandnames/services/services.dart';
-import 'package:flutter_bandnames/models/usuario.dart';
+import 'package:flutter_bandnames/models/usuarios_response.dart';
 
 class UsuariosScreen extends StatefulWidget {
   const UsuariosScreen({super.key});
@@ -17,19 +17,16 @@ class UsuariosScreen extends StatefulWidget {
 class _UsuariosScreenState extends State<UsuariosScreen> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
-  final usuarios = [
-    //UsuarioModel(
-    //    email: "carlos@mail.com", nombre: "Carlos", online: true, uid: "1"),
-    //UsuarioModel(
-    //    email: "jose@mail.com", nombre: "Jose", online: true, uid: "2"),
-    //UsuarioModel(
-    //    email: "maria@mail.com", nombre: "Maria", online: false, uid: "3")
-  ];
+
+  final usuarioService = UsuariosService();
+
+  List<UsuarioModel> usuarios = [];
 
   @override
   void initState() {
     super.initState();
     _connectSocket();
+    _cargarUsuarios();
   }
 
   Future<void> _connectSocket() async {
@@ -42,10 +39,8 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
-
-    final socketService = Provider.of<SocketService>(context);
-
     final usuario = authService.usuario;
+    final socketService = Provider.of<SocketService>(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -105,9 +100,8 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   }
 
   void _cargarUsuarios() async {
-    // monitor network fetch
-    await Future.delayed(const Duration(milliseconds: 2000));
-
+    usuarios = await usuarioService.getUsuarios();
+    setState(() {});
     refreshController.refreshCompleted();
   }
 }
@@ -136,6 +130,11 @@ class _usuarioListTile extends StatelessWidget {
             color: usuario.online ? Colors.green[300] : Colors.red,
             borderRadius: BorderRadius.circular(100)),
       ),
+      onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+        chatService.usuarioPara = usuario;
+        Navigator.pushNamed(context, AppRoute.chatScreen);
+      },
     );
   }
 }

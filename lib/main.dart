@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-//PROPIo
+//PROPIO
 import 'package:flutter_bandnames/router/app_router.dart';
 import 'package:flutter_bandnames/services/services.dart';
 
@@ -15,10 +15,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => SocketService(),
+          create: (context) => SocketService(),
         ),
         ChangeNotifierProvider(
           create: (context) => AuthService(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChatService(),
         )
       ],
       child: MaterialApp(

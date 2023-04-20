@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:flutter_bandnames/models/usuario.dart';
+import 'package:flutter_bandnames/models/usuarios_response.dart';
 
 LoginResponse loginResponseFromJson(String str) =>
     LoginResponse.fromJson(json.decode(str));

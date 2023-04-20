@@ -1,7 +1,9 @@
 import "dart:io";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/services/services.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -19,6 +21,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final chatService = Provider.of<ChatService>(context);
+    final usuarioPara = chatService.usuarioPara;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -29,16 +34,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             CircleAvatar(
               maxRadius: 14,
               backgroundColor: Colors.blue[100],
-              child: const Text(
-                'CA',
+              child: Text(
+                usuarioPara?.name.substring(0, 2) ?? "",
                 style: TextStyle(fontSize: 12),
               ),
             ),
             const SizedBox(
               height: 3,
             ),
-            const Text(
-              "Carlos Diaz",
+            Text(
+              usuarioPara?.name ?? "",
               style: TextStyle(color: Colors.black87, fontSize: 14),
             )
           ],
@@ -146,5 +151,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     for (ChatMessage message in _messages) {
       message.animationController.dispose();
     }
+    super.dispose();
   }
 }
