@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/config/variables.dart';
+import 'package:flutter_bandnames/services/auth_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 enum ServerStatus { online, offline, connecting }
@@ -11,20 +12,21 @@ class SocketService with ChangeNotifier {
   ServerStatus get serverStatus => _serverStatus;
   IO.Socket get socket => _socket;
 
-  SocketService() {
-    _initConfig();
-  }
+  //SocketService() {
+  //  _initConfig();
+  //}
 
-  _initConfig() {
-    // Dart client
+  connect() async {
+    final token = await AuthService.getToken();
 
     // Dart client
     _socket = IO.io(
         Variables.socketUrl,
         IO.OptionBuilder()
             .setTransports(['websocket']) //1 for Flutter or Dart VM
-            .disableAutoConnect() // disable auto-connection
-            //.setExtraHeaders({'foo': 'bar'}) // optional
+            .enableAutoConnect()
+            .enableForceNew() // disable auto-connection
+            .setExtraHeaders({'Authorization': "Bearer $token"})
             .build());
     _socket.connect();
 
@@ -50,5 +52,9 @@ class SocketService with ChangeNotifier {
     _socket.on('nuevo_mensaje', (data) {
       print('nuevo-mensaje: $data');
     });
+  }
+
+  void disconect() {
+    _socket.disconnect();
   }
 }

@@ -30,7 +30,7 @@ class AuthService with ChangeNotifier {
     await storage.delete(key: "token");
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<String?> login(String email, String password) async {
     try {
       autenticando = true;
       final data = {"email": email, "password": password};
@@ -45,20 +45,19 @@ class AuthService with ChangeNotifier {
         final loginResponse = loginResponseFromJson(resp.body);
         usuario = loginResponse.user;
         await _guardarToken(loginResponse.token);
-        return true;
+        return null;
       } else {
-        return false;
+        final error = jsonDecode(resp.body);
+        final messageError = error?['message'].toString() ?? "PASO UN ERROR";
+        return messageError;
       }
     } catch (error) {
-      print(
-        "Error=> $error",
-      );
       autenticando = false;
-      return false;
+      return error.toString();
     }
   }
 
-  Future<bool> register(String name, String email, String password) async {
+  Future<String?> register(String name, String email, String password) async {
     try {
       autenticando = true;
       final data = {"email": email, "password": password, "name": name};
@@ -72,16 +71,15 @@ class AuthService with ChangeNotifier {
         final registerResponse = loginResponseFromJson(resp.body);
         usuario = registerResponse.user;
         await _guardarToken(registerResponse.token);
-        return true;
+        return null;
       } else {
-        return false;
+        final error = jsonDecode(resp.body);
+        final messageError = error?['message'].toString() ?? "PASO UN ERROR";
+        return messageError;
       }
     } catch (error) {
-      print(
-        "Error=> $error",
-      );
       autenticando = false;
-      return false;
+      return error.toString();
     }
   }
 

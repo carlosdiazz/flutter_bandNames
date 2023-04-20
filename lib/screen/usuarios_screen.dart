@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bandnames/router/app_router.dart';
-import 'package:flutter_bandnames/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+//PROPIO
+import 'package:flutter_bandnames/router/app_router.dart';
+import 'package:flutter_bandnames/services/services.dart';
 import 'package:flutter_bandnames/models/usuario.dart';
 
 class UsuariosScreen extends StatefulWidget {
@@ -25,23 +27,38 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _connectSocket();
+  }
+
+  Future<void> _connectSocket() async {
+    final socketServiceSinListen =
+        Provider.of<SocketService>(context, listen: false);
+    await socketServiceSinListen.connect();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+
+    final socketService = Provider.of<SocketService>(context);
+
     final usuario = authService.usuario;
-    print(usuario);
 
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text(
             usuario?.name.toUpperCase() ?? "",
-            style: TextStyle(color: Colors.black87),
+            style: const TextStyle(color: Colors.black87),
           ),
           elevation: 1,
           backgroundColor: Colors.white,
           leading: IconButton(
               onPressed: () {
-                //TODO Desconecatrno del Socket
+                socketService.disconect();
                 Navigator.pushReplacementNamed(context, AppRoute.loginScreen);
                 AuthService.deleteToken();
               },
@@ -51,12 +68,16 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
               )),
           actions: [
             Container(
-              margin: const EdgeInsets.only(right: 10),
-              child: Icon(
-                Icons.check_circle_outline,
-                color: Colors.blue[400],
-              ),
-            )
+                margin: const EdgeInsets.only(right: 10),
+                child: socketService.serverStatus == ServerStatus.online
+                    ? Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.blue[400],
+                      )
+                    : Icon(
+                        Icons.offline_bolt_outlined,
+                        color: Colors.red[400],
+                      ))
           ],
         ),
         body: SmartRefresher(

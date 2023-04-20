@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/helpers/mostrar_alerta.dart';
 import 'package:flutter_bandnames/router/app_router.dart';
-import 'package:flutter_bandnames/services/auth_service.dart';
+import 'package:flutter_bandnames/services/services.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -78,7 +78,7 @@ class _FormState extends State<_Form> {
                   FocusScope.of(context).unfocus();
                   final loginOk = await authService.login(
                       emailCtrl.text.trim(), passwordCtrl.text.trim());
-                  if (loginOk) {
+                  if (loginOk == null) {
                     //TODO Navegar a otra pantalla
                     Navigator.pushReplacementNamed(
                         context, AppRoute.usuariosScreen);
@@ -86,7 +86,7 @@ class _FormState extends State<_Form> {
                     mostrarAlerta(
                         context: context,
                         titulo: "Login Incorrecto",
-                        subtitulo: "Revise sus credenciales");
+                        subtitulo: loginOk);
                   }
                 },
           text: "Ingresar",
