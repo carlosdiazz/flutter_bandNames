@@ -10,7 +10,7 @@ import 'package:flutter_bandnames/models/login_response.dart';
 import 'package:flutter_bandnames/models/usuarios_response.dart';
 
 class AuthService with ChangeNotifier {
-  UsuarioModel? usuario;
+  late UsuarioModel usuario;
   bool _autenticando = false;
 
   bool get autenticando => _autenticando;

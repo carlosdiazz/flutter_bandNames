@@ -1,9 +1,12 @@
 import "dart:io";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bandnames/interfaces/interfaces.dart';
+import 'package:provider/provider.dart';
+
+//PROPIO
 import 'package:flutter_bandnames/services/services.dart';
 import 'package:flutter_bandnames/widgets/widgets.dart';
-import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -16,12 +19,37 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
   bool _estaEscribeindo = false;
-
   final List<ChatMessage> _messages = [];
+
+  late ChatService chatService;
+  late SocketService socketService;
+  late AuthService authService;
+
+  @override
+  void initState() {
+    super.initState();
+    chatService = Provider.of<ChatService>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
+    authService = Provider.of<AuthService>(context, listen: false);
+    socketService.socket.on('mensaje_personal', _escucharMensaje);
+  }
+
+  void _escucharMensaje(dynamic data) {
+    ChatMessage message = ChatMessage(
+        texto: data['mensage'],
+        uid: data['de'],
+        animationController: AnimationController(
+            vsync: this, duration: const Duration(milliseconds: 300)));
+    setState(() {
+      _messages.insert(0, message);
+    });
+
+    //Cone sto mando hacer la animacion
+    message.animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final chatService = Provider.of<ChatService>(context);
     final usuarioPara = chatService.usuarioPara;
 
     return Scaffold(
@@ -127,6 +155,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   _handleSubmit(String texto) {
     final String textoSinEspacio = texto.trim();
     if (textoSinEspacio.isEmpty) return;
+
     _textController.clear();
     _focusNode.requestFocus();
 
@@ -142,6 +171,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _estaEscribeindo = false;
     });
+
+    socketService.sendMensages(
+        de: authService.usuario.id,
+        para: chatService.usuarioPara.id,
+        texto: textoSinEspacio);
   }
 
   //Al momento de cerrar la pantalla limpiar
@@ -151,6 +185,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     for (ChatMessage message in _messages) {
       message.animationController.dispose();
     }
+    socketService.socket.off("mensaje_personal");
     super.dispose();
   }
 }
