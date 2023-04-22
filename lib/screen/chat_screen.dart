@@ -2,6 +2,7 @@ import "dart:io";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bandnames/interfaces/interfaces.dart';
+import 'package:flutter_bandnames/models/mensaje_response.dart';
 import 'package:provider/provider.dart';
 
 //PROPIO
@@ -32,11 +33,26 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     socketService = Provider.of<SocketService>(context, listen: false);
     authService = Provider.of<AuthService>(context, listen: false);
     socketService.socket.on('mensaje_personal', _escucharMensaje);
+    _cargarHistorial(chatService.usuarioPara.id);
+  }
+
+  void _cargarHistorial(String usuarioId) async {
+    List<Mensaje> chat = await chatService.getChat(usuarioId);
+    final history = chat.map((m) => ChatMessage(
+        texto: m.texto,
+        uid: m.de,
+        //uso el forward para que lanze la animacion de una vez
+        animationController:
+            AnimationController(vsync: this, duration: Duration.zero)
+              ..forward()));
+    setState(() {
+      _messages.insertAll(0, history);
+    });
   }
 
   void _escucharMensaje(dynamic data) {
     ChatMessage message = ChatMessage(
-        texto: data['mensage'],
+        texto: data['texto'],
         uid: data['de'],
         animationController: AnimationController(
             vsync: this, duration: const Duration(milliseconds: 300)));
@@ -161,7 +177,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     final newMessage = ChatMessage(
       texto: texto,
-      uid: "123",
+      uid: authService.usuario.id,
       animationController: AnimationController(
           vsync: this, duration: const Duration(milliseconds: 200)),
     );
