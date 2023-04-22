@@ -56,6 +56,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         uid: data['de'],
         animationController: AnimationController(
             vsync: this, duration: const Duration(milliseconds: 300)));
+    if (message.uid != chatService.usuarioPara.id) return;
+
     setState(() {
       _messages.insert(0, message);
     });
