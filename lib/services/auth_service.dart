@@ -55,6 +55,7 @@ class AuthService with ChangeNotifier {
       }
     } catch (error) {
       autenticando = false;
+      print(error);
       return error.toString();
     }
   }

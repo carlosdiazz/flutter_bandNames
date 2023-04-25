@@ -81,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               maxRadius: 14,
               backgroundColor: Colors.blue[100],
               child: Text(
-                usuarioPara?.name.substring(0, 2) ?? "",
+                usuarioPara.name.substring(0, 2),
                 style: TextStyle(fontSize: 12),
               ),
             ),
@@ -89,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               height: 3,
             ),
             Text(
-              usuarioPara?.name ?? "",
+              usuarioPara.name,
               style: TextStyle(color: Colors.black87, fontSize: 14),
             )
           ],
